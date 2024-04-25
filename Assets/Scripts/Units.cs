@@ -106,6 +106,15 @@ public class Unit {
         return new int[] {strength, intelligence, endurence, defense, agility, spirit, luck};
     }
     
+    public void setStatsToArray(int[] statArray) {
+        strength = statArray[0];
+        intelligence = statArray[1];
+        endurence = statArray[2];
+        defense = statArray[3];
+        agility = statArray[4];
+        spirit = statArray[5];
+        luck = statArray[6];
+    } 
 }
 
 
