@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class BattleUIScript : MonoBehaviour {
 
-    private static readonly int SKILL_BUTTON_Y_DIFFERENCE = 95;
+    private static readonly float SKILL_BUTTON_Y_DIFFERENCE = 95f;
     private static readonly int MAX_SKILLS = 6;
 
     private static Unit currentUnit;
@@ -19,31 +19,49 @@ public class BattleUIScript : MonoBehaviour {
     }
 
 
-    private GameObject generateButton() {
+    private GameObject generateButton(float previousY) {
         if (exampleSkillButton == null) {
             Debug.LogError("exampleSkillButton is null");
             return null;
         }
         Vector3 position = exampleSkillButton.transform.position;
-        return Instantiate(exampleSkillButton, new Vector3(position.x, position.y - SKILL_BUTTON_Y_DIFFERENCE, position.z), Quaternion.identity);
+        return Instantiate(exampleSkillButton, new Vector3(position.x, previousY - SKILL_BUTTON_Y_DIFFERENCE, position.z), Quaternion.identity);
     }
 
 
     // Start is called before the first frame update
     void Start() {
+        if (skillPanel == null) {
+            Debug.LogError("skillPanel is null");
+            return;
+        }
+        if (exampleSkillButton == null) {
+            Debug.LogError("exampleSkillButton is null");
+            return;
+        }
+
         skillButtons = new GameObject[MAX_SKILLS];
         for (int i = 0; i < MAX_SKILLS; i++) {
-            skillButtons[i] = generateButton();
+            skillButtons[i] = generateButton(
+                (i == 0) ? exampleSkillButton.transform.position.y : skillButtons[i - 1].transform.position.y);
             skillButtons[i].transform.SetParent(skillPanel.transform, false);
             skillButtons[i].SetActive(false);
         }
     }
 
-    public void setupButtons() {
+    /// <summary>
+    /// Sets up the skill buttons for the current unit
+    /// </summary>
+    public void openSkillsPanel() {
         if (currentUnit == null) {
             Debug.LogError("currentUnit is null");
             return;
         }
+        if (skillPanel == null) {
+            Debug.LogError("skillPanel is null");
+            return;
+        }
+
         Skill[] skills = currentUnit.getSkills();
         for (int i = 0; i < MAX_SKILLS; i++) {
             if (i < skills.Length) {
@@ -53,6 +71,8 @@ public class BattleUIScript : MonoBehaviour {
                 skillButtons[i].SetActive(false);
             }
         }
+
+        skillPanel.SetActive(true);
     }
 
 
