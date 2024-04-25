@@ -121,11 +121,11 @@ public class Unit {
 public class PartyMember : Unit {
     
     private int exp;
-    private int expToNextLevel;
+    // private int expToNextLevel;
     
     public PartyMember(string Name, int Hp, int Sp, int Level, int[] Stats, Skill[] Skills) : base(Name, Hp, Sp, Level, Stats, Skills) {
         exp = 0;
-        expToNextLevel = 0;
+        // expToNextLevel = 0;
     }
     
     public int getExp() {
