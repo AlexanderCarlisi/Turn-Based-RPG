@@ -65,16 +65,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\GameManagerScript.cs" />
-    <Compile Include="Assets\Scripts\Weapons.cs" />
-    <Compile Include="Assets\Scripts\Consumables.cs" />
-    <Compile Include="Assets\Scripts\Enums.cs" />
-    <Compile Include="Assets\Scripts\Skills.cs" />
-    <Compile Include="Assets\Scripts\Player.cs" />
+    <Compile Include="Assets\Scripts\Classes\Consumables.cs" />
+    <Compile Include="Assets\Scripts\Classes\Weapons.cs" />
+    <Compile Include="Assets\Scripts\Classes\Units.cs" />
+    <Compile Include="Assets\Scripts\Classes\Item.cs" />
+    <Compile Include="Assets\Scripts\Classes\Player.cs" />
+    <Compile Include="Assets\Scripts\Classes\Enums.cs" />
     <Compile Include="Assets\Scripts\UI\BattleUIScript.cs" />
-    <Compile Include="Assets\Scripts\Units.cs" />
-    <Compile Include="Assets\Scripts\Armor.cs" />
-    <Compile Include="Assets\Scripts\Item.cs" />
-    <Compile Include="Assets\Scripts\Ailments.cs" />
+    <Compile Include="Assets\Scripts\Classes\Armor.cs" />
+    <Compile Include="Assets\Scripts\Classes\Ailments.cs" />
+    <Compile Include="Assets\Scripts\Classes\Skills.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
