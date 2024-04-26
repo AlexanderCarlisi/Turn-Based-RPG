@@ -106,6 +106,10 @@ public class Unit {
         return new int[] {strength, intelligence, endurence, defense, agility, spirit, luck};
     }
     
+    /// <summary>
+    /// Sets the stats of the unit from an array.
+    /// </summary>
+    /// <param name="statArray"></param>
     public void setStatsToArray(int[] statArray) {
         strength = statArray[0];
         intelligence = statArray[1];
@@ -114,7 +118,65 @@ public class Unit {
         agility = statArray[4];
         spirit = statArray[5];
         luck = statArray[6];
-    } 
+    }
+
+    /// <summary>
+    /// Heals the unit by the given amount.
+    /// </summary>
+    /// <param name="amount"></param>
+    public void heal(int amount) {
+        hp += amount;
+        if (hp > maxHp) hp = maxHp;
+    }
+
+    /// <summary>
+    /// Damages the unit by the given amount.
+    /// </summary>
+    /// <param name="amount"></param>
+    public void damage(int amount) {
+        hp -= amount;
+        if (hp < 0) hp = 0;
+    }
+
+    /// <summary>
+    /// Charges the cost of the skill.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="cost"></param>
+    public void chargeCost(Enums.SkillType type, int cost) {
+        if (type == Enums.SkillType.Physical) {
+            hp -= cost;
+            if (hp < 0) hp = 0;
+        }
+        else if (type == Enums.SkillType.Magical) {
+            sp -= cost;
+            if (sp < 0) sp = 0;
+        }
+    }
+
+    /// <summary>
+    /// Checks if the unit has enough cost to use the skill.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="cost"></param>
+    /// <returns></returns>
+    public bool checkCost(Enums.SkillType type, int cost) {
+        if (type == Enums.SkillType.Physical) {
+            return hp >= cost;
+        }
+        else if (type == Enums.SkillType.Magical) {
+            return sp >= cost;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Checks if the unit is alive.
+    /// </summary>
+    /// <returns></returns>
+    public bool isAlive() {
+        return hp > 0;
+    }
 }
 
 

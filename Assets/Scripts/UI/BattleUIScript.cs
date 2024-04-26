@@ -12,12 +12,12 @@ public class BattleUIScript : MonoBehaviour {
     private static readonly int MAX_PARTY_MEMBERS = 4;
     private static readonly int MAX_ENEMIES = 5;
 
-    [SerializeField] private GameObject skillPanel;
-    [SerializeField] private GameObject exampleSkillButton;
+    [SerializeField] private static GameObject skillPanel;
+    [SerializeField] private static GameObject exampleSkillButton;
 
-    [SerializeField] private GameObject statusPanel;
-    [SerializeField] private GameObject examplePartyPanel;
-    [SerializeField] private GameObject exampleEnemyPanel;
+    [SerializeField] private static GameObject statusPanel;
+    [SerializeField] private static GameObject examplePartyPanel;
+    [SerializeField] private static GameObject exampleEnemyPanel;
 
     private static Unit currentUnit;
 
@@ -139,6 +139,7 @@ public class BattleUIScript : MonoBehaviour {
         for (int i = 0; i < MAX_SKILLS; i++) {
             if (i < skills.Length) {
                 skillButtons[i].SetActive(true);
+                skillButtons[i].GetComponent<Button>().onClick.AddListener(() => Battle.selectSkill(i));
                 skillButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = skills[i].getName();
             } else {
                 skillButtons[i].SetActive(false);
@@ -156,7 +157,7 @@ public class BattleUIScript : MonoBehaviour {
     /// </summary>
     /// <param name="party"></param>
     /// <param name="enemies"></param>
-    public void updateStatusPanel(PartyMember[] party, Enemy[] enemies) {
+    public static void updateStatusPanel(PartyMember[] party, Enemy[] enemies) {
         if (party == null) {
             Debug.LogError("party is null");
             return;

@@ -21,6 +21,14 @@ public class Player {
             new AttackSkill("FireSkill1", Enums.Element.Fire, 10)
         });
     }
+
+    public PartyMember[] getParty() {
+        return party;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
 }
 
 
