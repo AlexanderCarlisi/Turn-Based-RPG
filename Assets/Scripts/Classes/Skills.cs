@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 public class Skill {
 
@@ -25,30 +26,29 @@ public class Skill {
     }
 
 
-    private static readonly AttackSkill[] attackSkills = new AttackSkill[] {
-        new ("SuperPunch", Enums.Element.Physical, 10),
-        new ("Fireball", Enums.Element.Fire, 15),
-        new ("Ice Shard", Enums.Element.Ice, 15),
-        new ("Lightning", Enums.Element.Elec, 15),
-        new ("Wind Slash", Enums.Element.Wind, 15),
-        new ("Earthquake", Enums.Element.Earth, 15),
-        new ("Water Gun", Enums.Element.Water, 15),
-        new ("Megidola", Enums.Element.Almighty, 20)
+    private static readonly Dictionary<Enums.SkillNames.Attack, AttackSkill> attackSkills = new Dictionary<Enums.SkillNames.Attack, AttackSkill>() {
+        {Enums.SkillNames.Attack.Slash, new AttackSkill("Slash", Enums.Element.Physical, 10)},
+        {Enums.SkillNames.Attack.Fireball, new AttackSkill("Fireball", Enums.Element.Fire, 20)},
+        {Enums.SkillNames.Attack.IceBlast, new AttackSkill("Ice Blast", Enums.Element.Ice, 20)},
+        {Enums.SkillNames.Attack.Thunder, new AttackSkill("Thunder", Enums.Element.Elec, 20)},
+        {Enums.SkillNames.Attack.Earthquake, new AttackSkill("Earthquake", Enums.Element.Earth, 20)},
+        {Enums.SkillNames.Attack.WindSlash, new AttackSkill("Wind Slash", Enums.Element.Wind, 20)},
+        {Enums.SkillNames.Attack.PiercingHalos, new AttackSkill("Piercing Halos", Enums.Element.Almighty, 30)}
     };
 
-    private static readonly HealSkill[] healSkills = new HealSkill[] {
-        new ("Basic Heal", false, 10),
-        new ("Intermediate Heal", false, 20),
-        new ("Advanced Heal", false, 30),
-        new ("Mastered Heal", true, 25)
+    private static readonly Dictionary<Enums.SkillNames.Heal, HealSkill> healSkills = new Dictionary<Enums.SkillNames.Heal, HealSkill>() {
+        {Enums.SkillNames.Heal.Basic, new HealSkill("Basic Heal", false, 10)},
+        {Enums.SkillNames.Heal.Intermediate, new HealSkill("Intermediate Heal", false, 20)},
+        {Enums.SkillNames.Heal.Advanced, new HealSkill("Advanced Heal", false, 30)},
+        {Enums.SkillNames.Heal.Mastered, new HealSkill("Mastered Heal", true, 25)}
     };
 
-    public static AttackSkill getAttackSkill(int index) {
-        return attackSkills[index];
+    public static AttackSkill getAttackSkill(Enums.SkillNames.Attack key) {
+        return attackSkills[key];
     }
-
-    public static HealSkill getHealSkill(int index) {
-        return healSkills[index];
+    
+    public static HealSkill getHealSkill(Enums.SkillNames.Heal key) {
+        return healSkills[key];
     }
     
 }

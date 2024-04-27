@@ -75,4 +75,27 @@ public static class Enums {
         Melee,
         Ranged
     }
+
+
+    /// <summary>
+    /// Optimized for the Skill class. Use Enums instead of Strings also AutoFill.
+    /// </summary>
+    public static class SkillNames {
+        public enum Attack {
+            Slash,
+            Fireball,
+            IceBlast,
+            Thunder,
+            Earthquake,
+            WindSlash,
+            PiercingHalos
+        }
+
+        public enum Heal {
+            Basic,
+            Intermediate,
+            Advanced,
+            Mastered
+        }
+    }
 }
