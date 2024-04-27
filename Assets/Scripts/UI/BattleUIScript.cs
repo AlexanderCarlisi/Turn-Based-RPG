@@ -23,6 +23,9 @@ public class BattleUIScript : MonoBehaviour {
     private static readonly int MAX_PARTY_MEMBERS = 4;
     private static readonly int MAX_ENEMIES = 5;
 
+    private static readonly Color TURN_COLOR = new Color(255, 210, 0, 175);
+    private static readonly Color DEFAULT_COLOR = new Color(0, 0, 0, 255);
+
     [SerializeField] private GameObject skillPanel;
     [SerializeField] private GameObject exampleSkillButton;
     private static GameObject s_skillPanel;
@@ -238,9 +241,9 @@ public class BattleUIScript : MonoBehaviour {
                 "HP: " + party[i].getHp() + "/" + party[i].getMaxHp() + "\n" +
                 "SP: " + party[i].getSp() + "/" + party[i].getMaxSp() + "\n";
             if (party[i] == currentUnit) {
-                statusPanels[i].GetComponent<Image>().color = new (255, 210, 0, 175);
+                statusPanels[i].GetComponent<Image>().color = TURN_COLOR;
             } else {
-                statusPanels[i].GetComponent<Image>().color = new (0, 0, 0, 255);
+                statusPanels[i].GetComponent<Image>().color = DEFAULT_COLOR;
             }
         }
 
@@ -250,9 +253,9 @@ public class BattleUIScript : MonoBehaviour {
                 "HP: " + enemies[i].getHp() + "/" + enemies[i].getMaxHp() + "\n" +
                 "SP: " + enemies[i].getSp() + "/" + enemies[i].getMaxSp() + "\n";
             if (enemies[i] == currentUnit) {
-                statusPanels[i + MAX_PARTY_MEMBERS].GetComponent<Image>().color = new (255, 210, 0, 175);
+                statusPanels[i + MAX_PARTY_MEMBERS].GetComponent<Image>().color = TURN_COLOR;
             } else {
-                statusPanels[i + MAX_PARTY_MEMBERS].GetComponent<Image>().color = new (0, 0, 0, 255);
+                statusPanels[i + MAX_PARTY_MEMBERS].GetComponent<Image>().color = DEFAULT_COLOR;
             }
         }
     }
