@@ -93,8 +93,11 @@ public class BattleHandlerScript : MonoBehaviour {
             Debug.LogError("No unit selected");
             return;
         }
+        if (i >= currentUnit.getSkills().Length) {
+            Debug.LogError("Invalid skill index");
+            return;
+        }
 
-        Debug.Log(i);
         chosenSkill = currentUnit.getSkills()[i];
 
         // Check Skill Requirements
