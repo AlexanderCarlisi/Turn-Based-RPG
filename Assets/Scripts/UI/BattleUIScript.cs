@@ -7,8 +7,14 @@ using UnityEngine.UI;
 public class BattleUIScript : MonoBehaviour {
 
     private static readonly float SKILL_BUTTON_Y_DIFFERENCE = 95f;
-    private static readonly float STATUS_PANEL_X_DIFFERENCE = 200f;
+
+    private static readonly float STATUS_PANEL_X_DIFFERENCE = 300f;
+    private static readonly float STATUS_PANEL_STARTING_X = -840f;
+    private static readonly float STATUS_PANEL_Y_PARTY = 100f;
+    private static readonly float STATUS_PANEL_Y_ENEMY = -100f;
+
     private static readonly float TARGET_BUTTON_X_DIFFERENCE = 100f;
+
     private static readonly int MAX_SKILLS = 6;
     private static readonly int MAX_PARTY_MEMBERS = 4;
     private static readonly int MAX_ENEMIES = 5;
@@ -17,8 +23,7 @@ public class BattleUIScript : MonoBehaviour {
     [SerializeField] private GameObject exampleSkillButton;
 
     [SerializeField] private GameObject statusPanel;
-    [SerializeField] private GameObject examplePartyPanel;
-    [SerializeField] private GameObject exampleEnemyPanel;
+    [SerializeField] private GameObject exampleStatusPanel;
 
     [SerializeField] private GameObject targetPanel;
     [SerializeField] private GameObject exampleTargetButton;
@@ -80,16 +85,16 @@ public class BattleUIScript : MonoBehaviour {
     /// <param name="examplePanel"></param>
     /// <param name="previousX"></param>
     /// <returns></returns>
-    private GameObject generateStatusPanel(GameObject examplePanel, float previousX) {
-        if (examplePanel == null) {
+    private GameObject generateStatusPanel(float previousX, float y) {
+        if (exampleStatusPanel == null) {
             Debug.LogError("examplePanel is null");
             return null;
         }
-        // Vector3 position = examplePanel.transform.position;
-        // GameObject panel = Instantiate(examplePanel, position, Quaternion.identity);
-        // panel.transform.Translate(new Vector3(0, 0, previousX + STATUS_PANEL_X_DIFFERENCE));
-        // return panel;
-        return Instantiate(examplePanel, statusPanel.transform);
+        
+        // return Instantiate(examplePanel, statusPanel.transform);
+        GameObject panel = Instantiate(exampleStatusPanel, statusPanel.transform);
+        panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(previousX + STATUS_PANEL_X_DIFFERENCE, y);
+        return panel;
     }
 
 
@@ -113,12 +118,8 @@ public class BattleUIScript : MonoBehaviour {
             Debug.LogError("exampleSkillButton is null");
             return;
         }
-        if (examplePartyPanel == null) {
-            Debug.LogError("examplePartyPanel is null");
-            return;
-        }
-        if (exampleEnemyPanel == null) {
-            Debug.LogError("exampleEnemyPanel is null");
+        if (exampleStatusPanel == null) {
+            Debug.LogError("exampleStatusPanel is null");
             return;
         }
         if (statusPanel == null) {
@@ -149,12 +150,11 @@ public class BattleUIScript : MonoBehaviour {
 
         statusPanels = new GameObject[MAX_PARTY_MEMBERS + MAX_ENEMIES];
         for (int i = 0; i < MAX_PARTY_MEMBERS + MAX_ENEMIES; i++) {
-            GameObject examplePanel = (i < MAX_PARTY_MEMBERS) ? examplePartyPanel : exampleEnemyPanel;
             statusPanels[i] = generateStatusPanel(
-                examplePanel,
-                (i == 0 || i == MAX_PARTY_MEMBERS) ? examplePanel.transform.position.x - STATUS_PANEL_X_DIFFERENCE : statusPanels[i - 1].transform.position.x);
-            statusPanels[i].transform.SetParent(statusPanel.transform, false);
-            statusPanels[i].gameObject.SetActive(false);
+                (i == 0 || i == MAX_PARTY_MEMBERS) ? STATUS_PANEL_STARTING_X - STATUS_PANEL_X_DIFFERENCE : statusPanels[i - 1].GetComponent<RectTransform>().anchoredPosition.x,
+                (i < MAX_PARTY_MEMBERS) ? STATUS_PANEL_Y_PARTY : STATUS_PANEL_Y_ENEMY
+            );
+            statusPanels[i].SetActive(false);
         }
 
         targetButtons = new GameObject[MAX_ENEMIES];
@@ -218,21 +218,18 @@ public class BattleUIScript : MonoBehaviour {
             return;
         }
         
-        int x = 0;
         for (int i = 0; i < party.Length; i++) {
-            statusPanels[x].SetActive(true);
-            statusPanels[x].GetComponentInChildren<TextMeshProUGUI>().text = party[i].getName() + "\n" +
+            statusPanels[i].SetActive(true);
+            statusPanels[i].GetComponentInChildren<TextMeshProUGUI>().text = party[i].getName() + "\n" +
                 "HP: " + party[i].getHp() + "/" + party[i].getMaxHp() + "\n" +
                 "SP: " + party[i].getSp() + "/" + party[i].getMaxSp() + "\n";
-            x++;
         }
 
         for (int i = 0; i < enemies.Length; i++) {
-            statusPanels[x].SetActive(true);
-            statusPanels[x].GetComponentInChildren<TextMeshProUGUI>().text = enemies[i].getName() + "\n" +
+            statusPanels[i + MAX_PARTY_MEMBERS].SetActive(true);
+            statusPanels[i + MAX_PARTY_MEMBERS].GetComponentInChildren<TextMeshProUGUI>().text = enemies[i].getName() + "\n" +
                 "HP: " + enemies[i].getHp() + "/" + enemies[i].getMaxHp() + "\n" +
                 "SP: " + enemies[i].getSp() + "/" + enemies[i].getMaxSp() + "\n";
-            x++;
         }
     }
 
