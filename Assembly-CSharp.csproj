@@ -75,6 +75,7 @@
     <Compile Include="Assets\Scripts\UI\BattleUIScript.cs" />
     <Compile Include="Assets\Scripts\Classes\Armor.cs" />
     <Compile Include="Assets\Scripts\Classes\Ailments.cs" />
+    <Compile Include="Assets\Scripts\BattleSchedulerScript.cs" />
     <Compile Include="Assets\Scripts\Classes\Skills.cs" />
   </ItemGroup>
   <ItemGroup>

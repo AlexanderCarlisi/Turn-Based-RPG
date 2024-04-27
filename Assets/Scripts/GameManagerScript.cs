@@ -11,7 +11,7 @@ public class GameManagerScript : MonoBehaviour {
         player = new Player();
 
         // Game Tests
-        PartyMember[] party = new PartyMember[4];
+        PartyMember[] party = new PartyMember[2];
 
         party[0] = new PartyMember("Warrior", 10, 10, 1, new int[]{1, 2, 3, 4, 5, 6, 7}, new Skill[]{
             new AttackSkill("SlashySkill1", Enums.Element.Physical, 5),
@@ -32,13 +32,6 @@ public class GameManagerScript : MonoBehaviour {
             }, Enums.AlgorithemType.TeamPlayer)
         };
 
-        BattleHandlerScript.startBattle(player, enemies);
-        
+        BattleSchedulerScript.startup(player, enemies);
     }
-
-    // // Update is called once per frame
-    // void Update()
-    // {
-        
-    // }
 }

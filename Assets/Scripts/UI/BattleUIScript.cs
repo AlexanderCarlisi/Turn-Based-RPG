@@ -85,10 +85,11 @@ public class BattleUIScript : MonoBehaviour {
             Debug.LogError("examplePanel is null");
             return null;
         }
-        // RectTransform rectTransform = examplePanel.rectTransform;
-        // GameObject newPanel = Instantiate(examplePanel, new Vector3(previousX + STATUS_PANEL_X_DIFFERENCE, rectTransform.position.y, rectTransform.position.z), Quaternion.identity);
-        Vector3 position = examplePanel.transform.position;
-        return Instantiate(examplePanel, new Vector3(previousX + STATUS_PANEL_X_DIFFERENCE, position.y, position.z), Quaternion.identity);
+        // Vector3 position = examplePanel.transform.position;
+        // GameObject panel = Instantiate(examplePanel, position, Quaternion.identity);
+        // panel.transform.Translate(new Vector3(0, 0, previousX + STATUS_PANEL_X_DIFFERENCE));
+        // return panel;
+        return Instantiate(examplePanel, statusPanel.transform);
     }
 
 
@@ -140,7 +141,7 @@ public class BattleUIScript : MonoBehaviour {
         skillButtons = new GameObject[MAX_SKILLS];
         for (int i = 0; i < MAX_SKILLS; i++) {
             skillButtons[i] = generateSkillButton(
-                (i == 0) ? exampleSkillButton.transform.position.y : skillButtons[i - 1].transform.position.y);
+                (i == 0) ? exampleSkillButton.transform.position.y - SKILL_BUTTON_Y_DIFFERENCE : skillButtons[i - 1].transform.position.y);
             skillButtons[i].transform.SetParent(skillPanel.transform, false);
             skillButtons[i].SetActive(false);
             skillButtons[i].GetComponent<Button>().onClick.AddListener(() => BattleHandlerScript.selectSkill(i));
@@ -151,7 +152,7 @@ public class BattleUIScript : MonoBehaviour {
             GameObject examplePanel = (i < MAX_PARTY_MEMBERS) ? examplePartyPanel : exampleEnemyPanel;
             statusPanels[i] = generateStatusPanel(
                 examplePanel,
-                (i == 0 || i == MAX_PARTY_MEMBERS) ? examplePanel.transform.position.x : statusPanels[i - 1].transform.position.x);
+                (i == 0 || i == MAX_PARTY_MEMBERS) ? examplePanel.transform.position.x - STATUS_PANEL_X_DIFFERENCE : statusPanels[i - 1].transform.position.x);
             statusPanels[i].transform.SetParent(statusPanel.transform, false);
             statusPanels[i].gameObject.SetActive(false);
         }
@@ -159,7 +160,7 @@ public class BattleUIScript : MonoBehaviour {
         targetButtons = new GameObject[MAX_ENEMIES];
         for (int i = 0; i < MAX_ENEMIES; i++) {
             targetButtons[i] = generateTargetButton(
-                (i == 0) ? exampleTargetButton.transform.position.x : targetButtons[i - 1].transform.position.x);
+                (i == 0) ? exampleTargetButton.transform.position.x - TARGET_BUTTON_X_DIFFERENCE : targetButtons[i - 1].transform.position.x);
             targetButtons[i].transform.SetParent(targetPanel.transform, false);
             targetButtons[i].SetActive(false);
             targetButtons[i].GetComponent<Button>().onClick.AddListener(() => BattleHandlerScript.selectTarget(i));
@@ -212,30 +213,26 @@ public class BattleUIScript : MonoBehaviour {
             Debug.LogError("enemies is null");
             return;
         }
+        if (statusPanels == null) {
+            Debug.LogError("statusPanels is null");
+            return;
+        }
+        
+        int x = 0;
+        for (int i = 0; i < party.Length; i++) {
+            statusPanels[x].SetActive(true);
+            statusPanels[x].GetComponentInChildren<TextMeshProUGUI>().text = party[i].getName() + "\n" +
+                "HP: " + party[i].getHp() + "/" + party[i].getMaxHp() + "\n" +
+                "SP: " + party[i].getSp() + "/" + party[i].getMaxSp() + "\n";
+            x++;
+        }
 
-        // int[] stats = currentUnit.getStatsAsArray();
-        for (int i = 0; i < MAX_PARTY_MEMBERS + MAX_ENEMIES; i++) {
-            if (i < MAX_PARTY_MEMBERS) {
-                statusPanels[i].GetComponentInChildren<TextMeshProUGUI>().text = party[i].getName() + "\n" +
-                    "HP: " + party[i].getHp() + "/" + party[i].getMaxHp() + "\n" +
-                    "SP: " + party[i].getSp() + "/" + party[i].getMaxSp() + "\n";
-                    // "Level: " + party[i].getLevel() + "\n" +
-                    // "Strength: " + party[i].getStrength() + "\n" +
-                    // "Intelligence: " + party[i].getIntelligence() + "\n" +
-                    // "Endurence: " + party[i].getEndurence() + "\n" +
-                    // "Defense: " + party[i].getDefense() + "\n" +
-                    // "Agility: " + party[i].getAgility() + "\n" +
-                    // "Spirit: " + party[i].getSpirit() + "\n" +
-                    // "Luck: " + party[i].getLuck();
-            } else {
-                statusPanels[i].GetComponentInChildren<TextMeshProUGUI>().text = enemies[i - MAX_PARTY_MEMBERS].getName() + "\n" +
-                    "HP: " + enemies[i - MAX_PARTY_MEMBERS].getHp() + "/" + enemies[i - MAX_PARTY_MEMBERS].getMaxHp() + "\n" +
-                    "SP: " + enemies[i - MAX_PARTY_MEMBERS].getSp() + "/" + enemies[i - MAX_PARTY_MEMBERS].getMaxSp() + "\n";
-                    // "Level: " + enemies[i - MAX_PARTY_MEMBERS].getLevel() + "\n" +
-                    // "Strength: " + enemies[i - MAX_PARTY_MEMBERS].getStrength() + "\n" +
-                    // "Intelligence: " + enemies[i - MAX_PARTY_MEMBERS].getIntelligence() + "\n" +
-                    // "Endurence: " + enemies
-            }
+        for (int i = 0; i < enemies.Length; i++) {
+            statusPanels[x].SetActive(true);
+            statusPanels[x].GetComponentInChildren<TextMeshProUGUI>().text = enemies[i].getName() + "\n" +
+                "HP: " + enemies[i].getHp() + "/" + enemies[i].getMaxHp() + "\n" +
+                "SP: " + enemies[i].getSp() + "/" + enemies[i].getMaxSp() + "\n";
+            x++;
         }
     }
 

@@ -30,13 +30,7 @@ public class Unit {
         maxSp = sp;
         level = Level;
 
-        strength = Stats[0];
-        intelligence = Stats[1];
-        endurence = Stats[2];
-        defense = Stats[3];
-        agility = Stats[4];
-        spirit = Stats[5];
-        luck = Stats[6];
+        setStatsToArray(Stats);
 
         skills = Skills;
     }
