@@ -37,6 +37,7 @@ public class BattleHandlerScript : MonoBehaviour {
     public static void restartTurnValues() {
         chosenSkill = null;
         chosenTarget = null;
+        BattleUIScript.closeAllPanels();
     }
 
     public static void nextTurn() {
