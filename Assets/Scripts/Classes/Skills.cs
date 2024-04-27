@@ -23,6 +23,33 @@ public class Skill {
     public Enums.SkillType getType() {
         return type;
     }
+
+
+    private static readonly AttackSkill[] attackSkills = new AttackSkill[] {
+        new ("SuperPunch", Enums.Element.Physical, 10),
+        new ("Fireball", Enums.Element.Fire, 15),
+        new ("Ice Shard", Enums.Element.Ice, 15),
+        new ("Lightning", Enums.Element.Elec, 15),
+        new ("Wind Slash", Enums.Element.Wind, 15),
+        new ("Earthquake", Enums.Element.Earth, 15),
+        new ("Water Gun", Enums.Element.Water, 15),
+        new ("Megidola", Enums.Element.Almighty, 20)
+    };
+
+    private static readonly HealSkill[] healSkills = new HealSkill[] {
+        new ("Basic Heal", false, 10),
+        new ("Intermediate Heal", false, 20),
+        new ("Advanced Heal", false, 30),
+        new ("Mastered Heal", true, 25)
+    };
+
+    public static AttackSkill getAttackSkill(int index) {
+        return attackSkills[index];
+    }
+
+    public static HealSkill getHealSkill(int index) {
+        return healSkills[index];
+    }
     
 }
 
@@ -52,7 +79,7 @@ public class AttackSkill : Skill {
 
 public class HealSkill : Skill {
 
-    private static readonly float PERCENT_COST_RATIO = 0.5f;
+    private static readonly float PERCENT_COST_RATIO = 1.5f;
     private static readonly float COST_RATIO = 0.432f;
 
     private bool percent;
