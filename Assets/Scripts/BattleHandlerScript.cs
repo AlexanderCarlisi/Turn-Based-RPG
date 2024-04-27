@@ -94,6 +94,7 @@ public class BattleHandlerScript : MonoBehaviour {
             return;
         }
 
+        Debug.Log(i);
         chosenSkill = currentUnit.getSkills()[i];
 
         // Check Skill Requirements

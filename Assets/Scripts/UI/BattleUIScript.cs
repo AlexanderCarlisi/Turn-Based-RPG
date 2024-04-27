@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 public class BattleUIScript : MonoBehaviour {
 
     private static readonly float SKILL_BUTTON_Y_DIFFERENCE = 95f;
+    private static readonly float SKILL_BUTTON_STARTING_Y = 300f;
 
     private static readonly float STATUS_PANEL_X_DIFFERENCE = 300f;
     private static readonly float STATUS_PANEL_STARTING_X = -840f;
@@ -72,10 +74,12 @@ public class BattleUIScript : MonoBehaviour {
     private GameObject generateSkillButton(float previousY) {
         if (exampleSkillButton == null) {
             Debug.LogError("exampleSkillButton is null");
-            return null;
+            return Instantiate(new GameObject());
         }
-        Vector3 position = exampleSkillButton.transform.position;
-        return Instantiate(exampleSkillButton, new Vector3(position.x, previousY - SKILL_BUTTON_Y_DIFFERENCE, position.z), Quaternion.identity);
+        
+        GameObject button = Instantiate(exampleSkillButton, skillPanel.transform);
+        button.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, previousY - SKILL_BUTTON_Y_DIFFERENCE);
+        return button;
     }
 
 
@@ -88,10 +92,9 @@ public class BattleUIScript : MonoBehaviour {
     private GameObject generateStatusPanel(float previousX, float y) {
         if (exampleStatusPanel == null) {
             Debug.LogError("examplePanel is null");
-            return null;
+            return Instantiate(new GameObject());
         }
-        
-        // return Instantiate(examplePanel, statusPanel.transform);
+
         GameObject panel = Instantiate(exampleStatusPanel, statusPanel.transform);
         panel.GetComponent<RectTransform>().anchoredPosition = new Vector2(previousX + STATUS_PANEL_X_DIFFERENCE, y);
         return panel;
@@ -101,7 +104,7 @@ public class BattleUIScript : MonoBehaviour {
     private GameObject generateTargetButton(float previousX) {
         if (exampleTargetButton == null) {
             Debug.LogError("exampleTargetButton is null");
-            return null;
+            return Instantiate(new GameObject());
         }
         Vector3 position = exampleTargetButton.transform.position;
         return Instantiate(exampleTargetButton, new Vector3(previousX + TARGET_BUTTON_X_DIFFERENCE, position.y, position.z), Quaternion.identity);
@@ -141,17 +144,18 @@ public class BattleUIScript : MonoBehaviour {
 
         skillButtons = new GameObject[MAX_SKILLS];
         for (int i = 0; i < MAX_SKILLS; i++) {
-            skillButtons[i] = generateSkillButton(
-                (i == 0) ? exampleSkillButton.transform.position.y - SKILL_BUTTON_Y_DIFFERENCE : skillButtons[i - 1].transform.position.y);
-            skillButtons[i].transform.SetParent(skillPanel.transform, false);
+            skillButtons[i] = generateSkillButton((i == 0) ? SKILL_BUTTON_STARTING_Y + SKILL_BUTTON_Y_DIFFERENCE : skillButtons[i - 1].GetComponent<RectTransform>().anchoredPosition.y);
             skillButtons[i].SetActive(false);
-            skillButtons[i].GetComponent<Button>().onClick.AddListener(() => BattleHandlerScript.selectSkill(i));
+            int index = i;
+            skillButtons[i].GetComponent<Button>().onClick.AddListener(() => BattleHandlerScript.selectSkill(index));
+            skillButtons[i].name = "SkillButton " + i;
         }
 
         statusPanels = new GameObject[MAX_PARTY_MEMBERS + MAX_ENEMIES];
         for (int i = 0; i < MAX_PARTY_MEMBERS + MAX_ENEMIES; i++) {
             statusPanels[i] = generateStatusPanel(
-                (i == 0 || i == MAX_PARTY_MEMBERS) ? STATUS_PANEL_STARTING_X - STATUS_PANEL_X_DIFFERENCE : statusPanels[i - 1].GetComponent<RectTransform>().anchoredPosition.x,
+                (i == 0 || i == MAX_PARTY_MEMBERS) ? 
+                    STATUS_PANEL_STARTING_X - STATUS_PANEL_X_DIFFERENCE : statusPanels[i - 1].GetComponent<RectTransform>().anchoredPosition.x,
                 (i < MAX_PARTY_MEMBERS) ? STATUS_PANEL_Y_PARTY : STATUS_PANEL_Y_ENEMY
             );
             statusPanels[i].SetActive(false);
@@ -188,6 +192,8 @@ public class BattleUIScript : MonoBehaviour {
             if (i < skills.Length) {
                 skillButtons[i].SetActive(true);
                 skillButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = skills[i].getName();
+                    // "Cost: " + skills[i].getCost() + "\n" +
+                    // "Type: " + skills[i].getType();
             } else {
                 skillButtons[i].SetActive(false);
             }
