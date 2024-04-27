@@ -10,16 +10,10 @@ public class Player {
     public Player() {
         inventory = new Inventory();
         party = new PartyMember[PARTY_SIZE];
+    }
 
-        // Game Tests
-        party[0] = new PartyMember("Warrior", 10, 10, 1, new int[]{1, 2, 3, 4, 5, 6, 7}, new Skill[]{
-            new AttackSkill("SlashySkill1", Enums.Element.Physical, 5),
-            new AttackSkill("SlashySkill2", Enums.Element.Physical, 5),
-            new AttackSkill("SlashySkill3", Enums.Element.Physical, 5)
-        });
-        party[1] = new PartyMember("Mage", 10, 20, 2, new int[]{1, 3, 4, 6, 7, 8, 9}, new Skill[]{
-            new AttackSkill("FireSkill1", Enums.Element.Fire, 10)
-        });
+    public void setParty(PartyMember[] Party) {
+        party = Party;
     }
 
     public PartyMember[] getParty() {
