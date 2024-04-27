@@ -58,7 +58,7 @@ public class BattleHandlerScript : MonoBehaviour {
         if (turnIndex >= turnOrder.Count) turnIndex = 0;
         currentUnit = turnOrder[turnIndex];
         BattleUIScript.setUnit(currentUnit);
-        BattleUIScript.updateStatusPanel(party, enemies);
+        BattleUIScript.updateStatusPanel(party, enemies, currentUnit);
 
         // **** testing to be removed ****
         if (currentUnit is Enemy) nextTurn();

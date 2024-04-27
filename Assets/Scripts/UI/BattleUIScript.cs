@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -217,7 +218,7 @@ public class BattleUIScript : MonoBehaviour {
     /// </summary>
     /// <param name="party"></param>
     /// <param name="enemies"></param>
-    public static void updateStatusPanel(PartyMember[] party, Enemy[] enemies) {
+    public static void updateStatusPanel(PartyMember[] party, Enemy[] enemies, Unit currentUnit) {
         if (party == null) {
             Debug.LogError("party is null");
             return;
@@ -236,6 +237,11 @@ public class BattleUIScript : MonoBehaviour {
             statusPanels[i].GetComponentInChildren<TextMeshProUGUI>().text = party[i].getName() + "\n" +
                 "HP: " + party[i].getHp() + "/" + party[i].getMaxHp() + "\n" +
                 "SP: " + party[i].getSp() + "/" + party[i].getMaxSp() + "\n";
+            if (party[i] == currentUnit) {
+                statusPanels[i].GetComponent<Image>().color = new (255, 210, 0, 175);
+            } else {
+                statusPanels[i].GetComponent<Image>().color = new (0, 0, 0, 255);
+            }
         }
 
         for (int i = 0; i < enemies.Length; i++) {
@@ -243,6 +249,11 @@ public class BattleUIScript : MonoBehaviour {
             statusPanels[i + MAX_PARTY_MEMBERS].GetComponentInChildren<TextMeshProUGUI>().text = enemies[i].getName() + "\n" +
                 "HP: " + enemies[i].getHp() + "/" + enemies[i].getMaxHp() + "\n" +
                 "SP: " + enemies[i].getSp() + "/" + enemies[i].getMaxSp() + "\n";
+            if (enemies[i] == currentUnit) {
+                statusPanels[i + MAX_PARTY_MEMBERS].GetComponent<Image>().color = new (255, 210, 0, 175);
+            } else {
+                statusPanels[i + MAX_PARTY_MEMBERS].GetComponent<Image>().color = new (0, 0, 0, 255);
+            }
         }
     }
 
