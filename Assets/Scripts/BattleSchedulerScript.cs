@@ -11,12 +11,12 @@ public class BattleSchedulerScript : MonoBehaviour {
 
     private static readonly Enemy[] enemies = new Enemy[] {
         new ("Cripple", 15, 40, 5, new int[]{1, 5, 3, 2, 1, 5, 1}, new Skill[]{
-            Skill.getAttackSkill(1),
-            Skill.getAttackSkill(2),
+            Skill.getAttackSkill(Enums.SkillNames.Attack.Fireball),
+            Skill.getAttackSkill(Enums.SkillNames.Attack.IceBlast),
         }, Enums.AlgorithemType.Sniper),
         new ("Scary Cube", 30, 40, 5, new int[]{7, 5, 5, 7, 1, 1, 5}, new Skill[]{
-            Skill.getAttackSkill(0),
-            Skill.getAttackSkill(7),
+            Skill.getAttackSkill(Enums.SkillNames.Attack.Slash),
+            Skill.getAttackSkill(Enums.SkillNames.Attack.PiercingHalos),
         }, Enums.AlgorithemType.Attacker)
     };
     private static readonly Enemy[][] encounters = new Enemy[][] {
@@ -36,9 +36,19 @@ public class BattleSchedulerScript : MonoBehaviour {
         party = player.getParty();
         selectedEnemies = Enemies;
     }
+    public static void startup(Player _Player, int encounterIndex) {
+        player = _Player;
+        party = player.getParty();
+        selectedEnemies = getEncounter(encounterIndex);
+    }
 
 
     public static void startBattle() {
         BattleHandlerScript.startBattle(player, selectedEnemies);
+    }
+    public static void startBattle(Player _Player, int encounterIndex) {
+        player = _Player;
+        selectedEnemies = getEncounter(encounterIndex);
+        startBattle();
     }
 }
