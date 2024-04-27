@@ -19,7 +19,7 @@ public class BattleHandlerScript : MonoBehaviour {
         party = player.getParty();
         enemies = Enemies;
 
-        turnIndex = 0;
+        turnIndex = -1; // incremented by nextTurn()
         turnOrder = new List<Unit>();
         
         foreach (PartyMember member in party) {
@@ -30,10 +30,7 @@ public class BattleHandlerScript : MonoBehaviour {
             turnOrder.Add(enemy);
         }
 
-        turnOrder.Sort((a, b) => a.getAgility().CompareTo(b.getAgility()));
-
-        currentUnit = turnOrder[turnIndex];
-
+        nextTurn();
     }
 
 
@@ -59,8 +56,10 @@ public class BattleHandlerScript : MonoBehaviour {
         turnIndex++;
         if (turnIndex >= turnOrder.Count) turnIndex = 0;
         currentUnit = turnOrder[turnIndex];
+        BattleUIScript.setUnit(currentUnit);
 
-        // if enemy
+        // **** testing to be removed ****
+        if (currentUnit is Enemy) nextTurn();
     }
 
     private static bool isFinished() {
@@ -140,7 +139,7 @@ public class BattleHandlerScript : MonoBehaviour {
         int amount = healSkill.isPercentBased() ? 
             (int) Math.Floor((double) chosenTarget.getMaxHp() * healSkill.getAmount()) : healSkill.getAmount();
         chosenTarget.heal(amount);
-        // display amount
+        BattleUIScript.setInfoText("Healed " + chosenTarget.getName() + " for " + amount + " HP");
     }
 
     private static void attack(AttackSkill attackSkill) {
@@ -152,7 +151,7 @@ public class BattleHandlerScript : MonoBehaviour {
         int targetDodgeRate = chosenTarget.getAgility() + targetDodgeChance;
 
         if (UnityEngine.Random.Range(0, 100) < targetDodgeRate - unitHitRate) {
-            // display dodge
+            BattleUIScript.setInfoText(chosenTarget.getName() + " dodged the attack!");
             return;
         }
 
@@ -170,6 +169,6 @@ public class BattleHandlerScript : MonoBehaviour {
         int damage = (int) Math.Floor(damageRoll + ((scaleStat - targetDefense) / 100f * damageRoll));
 
         chosenTarget.damage(damage);
-        // display damage
+        BattleUIScript.setInfoText("Dealt " + damage + " damage to " + chosenTarget.getName());
     }
 }

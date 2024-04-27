@@ -23,11 +23,15 @@ public class BattleUIScript : MonoBehaviour {
     [SerializeField] private GameObject targetPanel;
     [SerializeField] private GameObject exampleTargetButton;
 
+    [SerializeField] private GameObject infoPanel;
+
     private static Unit currentUnit;
 
     private static GameObject[] skillButtons;
     private static GameObject[] statusPanels;
     private static GameObject[] targetButtons;
+
+    private static Text infoText;
 
 
     /// <summary>
@@ -116,6 +120,22 @@ public class BattleUIScript : MonoBehaviour {
             Debug.LogError("exampleEnemyPanel is null");
             return;
         }
+        if (statusPanel == null) {
+            Debug.LogError("statusPanel is null");
+            return;
+        }
+        if (exampleTargetButton == null) {
+            Debug.LogError("exampleTargetButton is null");
+            return;
+        }
+        if (targetPanel == null) {
+            Debug.LogError("targetPanel is null");
+            return;
+        }
+        if (infoPanel == null) {
+            Debug.LogError("infoPanel is null");
+            return;
+        }
 
         skillButtons = new GameObject[MAX_SKILLS];
         for (int i = 0; i < MAX_SKILLS; i++) {
@@ -144,6 +164,8 @@ public class BattleUIScript : MonoBehaviour {
             targetButtons[i].SetActive(false);
             targetButtons[i].GetComponent<Button>().onClick.AddListener(() => BattleHandlerScript.selectTarget(i));
         }
+
+        infoText = infoPanel.GetComponentInChildren<Text>();
     }
 
 
@@ -234,5 +256,14 @@ public class BattleUIScript : MonoBehaviour {
                 targetButtons[i].SetActive(false);
             }
         }
+    }
+
+
+    public static void setInfoText(string text) {
+        if (infoText == null) {
+            Debug.LogError("infoText is null");
+            return;
+        }
+        infoText.GetComponentInChildren<TextMeshProUGUI>().text = text;
     }
 }
