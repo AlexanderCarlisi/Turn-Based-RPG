@@ -8,21 +8,26 @@ public class BattleUIScript : MonoBehaviour {
 
     private static readonly float SKILL_BUTTON_Y_DIFFERENCE = 95f;
     private static readonly float STATUS_PANEL_X_DIFFERENCE = 200f;
+    private static readonly float TARGET_BUTTON_X_DIFFERENCE = 100f;
     private static readonly int MAX_SKILLS = 6;
     private static readonly int MAX_PARTY_MEMBERS = 4;
     private static readonly int MAX_ENEMIES = 5;
 
-    [SerializeField] private static GameObject skillPanel;
-    [SerializeField] private static GameObject exampleSkillButton;
+    [SerializeField] private GameObject skillPanel;
+    [SerializeField] private GameObject exampleSkillButton;
 
-    [SerializeField] private static GameObject statusPanel;
-    [SerializeField] private static GameObject examplePartyPanel;
-    [SerializeField] private static GameObject exampleEnemyPanel;
+    [SerializeField] private GameObject statusPanel;
+    [SerializeField] private GameObject examplePartyPanel;
+    [SerializeField] private GameObject exampleEnemyPanel;
+
+    [SerializeField] private GameObject targetPanel;
+    [SerializeField] private GameObject exampleTargetButton;
 
     private static Unit currentUnit;
 
     private static GameObject[] skillButtons;
     private static GameObject[] statusPanels;
+    private static GameObject[] targetButtons;
 
 
     /// <summary>
@@ -83,6 +88,16 @@ public class BattleUIScript : MonoBehaviour {
     }
 
 
+    private GameObject generateTargetButton(float previousX) {
+        if (exampleTargetButton == null) {
+            Debug.LogError("exampleTargetButton is null");
+            return null;
+        }
+        Vector3 position = exampleTargetButton.transform.position;
+        return Instantiate(exampleTargetButton, new Vector3(previousX + TARGET_BUTTON_X_DIFFERENCE, position.y, position.z), Quaternion.identity);
+    }
+
+
     // Start is called before the first frame update
     void Start() {
         if (skillPanel == null) {
@@ -108,6 +123,7 @@ public class BattleUIScript : MonoBehaviour {
                 (i == 0) ? exampleSkillButton.transform.position.y : skillButtons[i - 1].transform.position.y);
             skillButtons[i].transform.SetParent(skillPanel.transform, false);
             skillButtons[i].SetActive(false);
+            skillButtons[i].GetComponent<Button>().onClick.AddListener(() => BattleHandlerScript.selectSkill(i));
         }
 
         statusPanels = new GameObject[MAX_PARTY_MEMBERS + MAX_ENEMIES];
@@ -118,6 +134,15 @@ public class BattleUIScript : MonoBehaviour {
                 (i == 0 || i == MAX_PARTY_MEMBERS) ? examplePanel.transform.position.x : statusPanels[i - 1].transform.position.x);
             statusPanels[i].transform.SetParent(statusPanel.transform, false);
             statusPanels[i].gameObject.SetActive(false);
+        }
+
+        targetButtons = new GameObject[MAX_ENEMIES];
+        for (int i = 0; i < MAX_ENEMIES; i++) {
+            targetButtons[i] = generateTargetButton(
+                (i == 0) ? exampleTargetButton.transform.position.x : targetButtons[i - 1].transform.position.x);
+            targetButtons[i].transform.SetParent(targetPanel.transform, false);
+            targetButtons[i].SetActive(false);
+            targetButtons[i].GetComponent<Button>().onClick.AddListener(() => BattleHandlerScript.selectTarget(i));
         }
     }
 
@@ -139,7 +164,6 @@ public class BattleUIScript : MonoBehaviour {
         for (int i = 0; i < MAX_SKILLS; i++) {
             if (i < skills.Length) {
                 skillButtons[i].SetActive(true);
-                skillButtons[i].GetComponent<Button>().onClick.AddListener(() => Battle.selectSkill(i));
                 skillButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = skills[i].getName();
             } else {
                 skillButtons[i].SetActive(false);
@@ -189,6 +213,25 @@ public class BattleUIScript : MonoBehaviour {
                     // "Strength: " + enemies[i - MAX_PARTY_MEMBERS].getStrength() + "\n" +
                     // "Intelligence: " + enemies[i - MAX_PARTY_MEMBERS].getIntelligence() + "\n" +
                     // "Endurence: " + enemies
+            }
+        }
+    }
+
+
+    public static void openTargetPanel(Unit[] units) {
+        if (units == null) {
+            Debug.LogError("units is null");
+            return;
+        }
+
+        for (int i = 0; i < MAX_ENEMIES; i++) {
+            if (i < units.Length) {
+                targetButtons[i].SetActive(true);
+                targetButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = units[i].getName() + "\n" +
+                    "HP: " + units[i].getHp() + "/" + units[i].getMaxHp() + "\n" +
+                    "SP: " + units[i].getSp() + "/" + units[i].getMaxSp() + "\n";
+            } else {
+                targetButtons[i].SetActive(false);
             }
         }
     }

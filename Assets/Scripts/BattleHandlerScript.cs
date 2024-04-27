@@ -1,10 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 
-public class Battle {    
+public class BattleHandlerScript : MonoBehaviour {    
     private static Player player;
     private static PartyMember[] party;
     private static Enemy[] enemies;
@@ -16,10 +14,10 @@ public class Battle {
     private static Skill chosenSkill;
     private static Unit chosenTarget;
 
-    public static void startBattle(Player player, Enemy[] enemies) {
-        Battle.player = player;
+    public static void startBattle(Player Player, Enemy[] Enemies) {
+        player = Player;
         party = player.getParty();
-        Battle.enemies = enemies;
+        enemies = Enemies;
 
         turnIndex = 0;
         turnOrder = new List<Unit>();
@@ -107,10 +105,10 @@ public class Battle {
 
         // Open Target Selection
         if (chosenSkill is AttackSkill) {
-            // Open Enemy Target Panel
+            BattleUIScript.openTargetPanel(enemies);
         }
         else if (chosenSkill is HealSkill) {
-            // Open Party Target Panel
+            BattleUIScript.openTargetPanel(party);
         }
         
         // Perform Unique Action
@@ -135,6 +133,7 @@ public class Battle {
         }
 
         currentUnit.chargeCost(chosenSkill.getType(), chosenSkill.getCost());
+        nextTurn();
     }
 
     private static void heal(HealSkill healSkill) {
@@ -152,12 +151,10 @@ public class Battle {
         int targetDodgeChance = UnityEngine.Random.Range(-targetLuck, targetLuck);
         int targetDodgeRate = chosenTarget.getAgility() + targetDodgeChance;
 
-        // int dodgeZone = targetAgility - unitAgility;
-        // if (targetEvasion - unitEvasion > dodgeZone) {
-        //     // display miss
-        //     nextTurn();
-        //     return;
-        // }
+        if (UnityEngine.Random.Range(0, 100) < targetDodgeRate - unitHitRate) {
+            // display dodge
+            return;
+        }
 
         // Damage Calculation
         int baseDamage = attackSkill.getBaseDamage();

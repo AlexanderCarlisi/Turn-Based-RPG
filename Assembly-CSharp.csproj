@@ -70,7 +70,7 @@
     <Compile Include="Assets\Scripts\Classes\Units.cs" />
     <Compile Include="Assets\Scripts\Classes\Item.cs" />
     <Compile Include="Assets\Scripts\Classes\Player.cs" />
-    <Compile Include="Assets\Scripts\Battle.cs" />
+    <Compile Include="Assets\Scripts\BattleHandlerScript.cs" />
     <Compile Include="Assets\Scripts\Classes\Enums.cs" />
     <Compile Include="Assets\Scripts\UI\BattleUIScript.cs" />
     <Compile Include="Assets\Scripts\Classes\Armor.cs" />
