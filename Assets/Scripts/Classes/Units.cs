@@ -11,6 +11,7 @@ public class Unit {
     private int level;
 
     private Skill[] skills;
+    private Weapon weapon;
 
     private int strength;
     private int intelligence;
@@ -87,6 +88,10 @@ public class Unit {
 
     public Skill[] getSkills() {
         return skills;
+    }
+
+    public Weapon getWeapon() {
+        return weapon ?? new Weapon("Fists", "Big Balls", 1, 95, Enums.Element.Physical, Enums.WeaponType.Melee);
     }
 
     /// <summary>

@@ -47,21 +47,28 @@ public class BattleHandlerScript : MonoBehaviour {
 
 
     /// <summary>
-    /// Waits for a specified number of seconds.
+    /// Interface for selecting a skill for the current unit to use.
     /// </summary>
-    /// <param name="seconds"></param>
-    public static void waitSeconds(float seconds) {
-        instance.StartCoroutine(instance.wait(seconds));
+    /// <param name="i"></param>
+    public static void selectSkill(int i) {
+        instance.battle.selectSkill(i);
     }
 
 
     /// <summary>
-    /// Waits for a specified number of seconds.
+    /// Interface for selecting a target for the current unit to attack.
     /// </summary>
-    /// <param name="seconds"></param>
-    /// <returns></returns>
-    private IEnumerator wait(float seconds) {
-        yield return new WaitForSeconds(seconds);
+    /// <param name="i"></param>
+    public static void selectTarget(int i) {
+        instance.battle.selectTarget(i);
+    }
+
+
+    /// <summary>
+    /// Opens the panel for selecting a Target to hit.
+    /// </summary>
+    public static void openEnemyTargetPanel() {
+        BattleUIScript.openTargetPanel(instance.battle.enemies);
     }
 
 
@@ -218,7 +225,8 @@ public class BattleHandlerScript : MonoBehaviour {
         /// <param name="i"></param>
         public void selectTarget(int i) {
             if (chosenSkill == null) {
-                Debug.LogError("No skill selected");
+                chosenTarget = enemies[i];
+                melee();
                 return;
             }
 
@@ -243,22 +251,48 @@ public class BattleHandlerScript : MonoBehaviour {
             if (currentUnit is Enemy enemy) {
                 BattleAction action = enemy.getAction(party, enemies);
 
-                if (action.getAction() == Enums.BattleAction.Skill) {
-                    chosenSkill = action.getSkill();
-                    chosenTarget = action.getTarget();
-                    if (chosenSkill is AttackSkill attackSkill) {
-                        useAttackSkill(attackSkill);
+                switch(action.getAction()) {
+                    case Enums.BattleAction.Skill: {
+                        chosenSkill = action.getSkill();
+                        chosenTarget = action.getTarget();
+                        if (chosenSkill is AttackSkill attackSkill) {
+                            useAttackSkill(attackSkill);
+                        }
+                        else if (chosenSkill is HealSkill healSkill) {
+                            heal(healSkill);
+                        }
+                        currentUnit.chargeCost(chosenSkill.getType(), chosenSkill.getCost());
+                        break;
                     }
-                    else if (chosenSkill is HealSkill healSkill) {
-                        heal(healSkill);
+
+                    case Enums.BattleAction.Weapon: {
+                        chosenTarget = action.getTarget();
+                        melee();
+                        break;
                     }
-                    currentUnit.chargeCost(chosenSkill.getType(), chosenSkill.getCost());
-                } else {
-                    // To be implemented
-                }
+                    
+                } 
             }
-            waitSeconds(3f);
+            
             nextTurn();
+        }
+
+
+        /// <summary>
+        /// Attacks the chosen target with a melee attack.
+        /// </summary>
+        private void melee() {
+            Weapon weapon = currentUnit.getWeapon();
+            int damage = weapon.getDamage();
+            int hitRate = weapon.getHitRate();
+
+            // Evasion Check
+            if (UnityEngine.Random.Range(0, 100) > hitRate) {
+                instance.setInfoText(chosenTarget.getName() + " dodged the attack!");
+            } else {
+                instance.setInfoText(currentUnit.getName() + " dealt " + damage + " damage to " + chosenTarget.getName());
+                chosenTarget.damage(damage);
+            }
         }
 
 
@@ -270,7 +304,7 @@ public class BattleHandlerScript : MonoBehaviour {
             int amount = healSkill.isPercentBased() ? 
                 (int) Math.Floor((double) chosenTarget.getMaxHp() * healSkill.getAmount()) : healSkill.getAmount();
             chosenTarget.heal(amount);
-            BattleUIScript.setInfoText("Healed " + chosenTarget.getName() + " for " + amount + " HP");
+            BattleUIScript.setInfoText(currentUnit.getName() + " healed " + chosenTarget.getName() + " for " + amount + " HP");
         }
 
 
@@ -287,10 +321,21 @@ public class BattleHandlerScript : MonoBehaviour {
 
             // Damage Calculation
             int damage = damageCalc(attackSkill, currentUnit, chosenTarget);
-            Debug.Log("Dealt " + damage + " damage to " + chosenTarget.getName());
             chosenTarget.damage(damage);
-            instance.setInfoText("Dealt " + damage + " damage to " + chosenTarget.getName());
+            instance.setInfoText(currentUnit.getName() + " dealt " + damage + " damage to " + chosenTarget.getName());
         }
+
+
+        // /// <summary>
+        // /// Wait Command
+        // /// </summary>
+        // /// <param name="seconds"></param>
+        // private void waitSeconds(float seconds) {
+        //     StartCoroutine(wait(seconds));
+        // }
+        // private IEnumerator wait(float seconds) {
+        //     yield return new WaitForSeconds(seconds);
+        // }
 
 
         /// <summary>
@@ -332,20 +377,6 @@ public class BattleHandlerScript : MonoBehaviour {
             int targetDodgeRate = targetUnit.getAgility() + targetDodgeChance;
 
             return UnityEngine.Random.Range(0, 100) < targetDodgeRate - unitHitRate;
-        }
-    }
-
-
-    /// <summary>
-    /// Interface for the Battle class to interact with the Player.
-    /// </summary>
-    public static class BattleInterface {
-        public static void selectSkill(int i) {
-            instance.battle.selectSkill(i);
-        }
-
-        public static void selectTarget(int i) {
-            instance.battle.selectTarget(i);
         }
     }
 }

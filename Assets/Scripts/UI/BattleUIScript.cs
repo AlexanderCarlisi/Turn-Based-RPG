@@ -157,7 +157,7 @@ public class BattleUIScript : MonoBehaviour {
                 SKILL_BUTTON_STARTING_Y + SKILL_BUTTON_Y_DIFFERENCE : skillButtons[i - 1].GetComponent<RectTransform>().anchoredPosition.y);
             skillButtons[i].SetActive(false);
             int index = i;
-            skillButtons[i].GetComponent<Button>().onClick.AddListener(() => BattleHandlerScript.BattleInterface.selectSkill(index));
+            skillButtons[i].GetComponent<Button>().onClick.AddListener(() => BattleHandlerScript.selectSkill(index));
             skillButtons[i].name = "SkillButton " + i;
         }
 
@@ -176,7 +176,7 @@ public class BattleUIScript : MonoBehaviour {
                 TARGET_BUTTON_STARTING_X - TARGET_BUTTON_X_DIFFERENCE : targetButtons[i - 1].GetComponent<RectTransform>().anchoredPosition.x);
             targetButtons[i].SetActive(false);
             int index = i;
-            targetButtons[i].GetComponent<Button>().onClick.AddListener(() => BattleHandlerScript.BattleInterface.selectTarget(index));
+            targetButtons[i].GetComponent<Button>().onClick.AddListener(() => BattleHandlerScript.selectTarget(index));
         }
 
         infoText = infoPanel.GetComponentInChildren<TextMeshProUGUI>();
