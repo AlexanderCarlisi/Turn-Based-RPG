@@ -319,6 +319,20 @@ public class BattleHandlerScript : MonoBehaviour {
             return UnityEngine.Random.Range(0, 100) < targetDodgeRate - unitHitRate;
         }
     }
+
+
+    /// <summary>
+    /// Interface for the Battle class to interact with the Player.
+    /// </summary>
+    public static class BattleInterface {
+        public static void selectSkill(int i) {
+            instance.battle.selectSkill(i);
+        }
+
+        public static void selectTarget(int i) {
+            instance.battle.selectTarget(i);
+        }
+    }
 }
 
 
