@@ -351,7 +351,7 @@ public class Enemy : Unit {
                         }
 
                         // Simulate damage to the target and check if it will die, DOESN'T necessarily mean they WILL die.
-                        int damage = BattleHandlerScript.damageCalc(atkSkill, this, target);
+                        int damage = BattleSim.damageCalc(atkSkill, this, target);
                         // If multiple skills will kill, use the one with the lowest cost.
                         if (target.getHp() - damage <= 0 && atkSkill.getCost() < skill.getCost()) {
                             skill = atkSkill;
