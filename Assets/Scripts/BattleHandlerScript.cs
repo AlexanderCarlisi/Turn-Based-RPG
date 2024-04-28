@@ -74,7 +74,7 @@ public class BattleHandlerScript : MonoBehaviour {
         BattleUIScript.updateStatusPanel(party, enemies, currentUnit);
 
         
-        // if (currentUnit is Enemy enemy)  
+        if (currentUnit is Enemy enemy) enemyTurn();
     }
 
 
@@ -176,6 +176,27 @@ public class BattleHandlerScript : MonoBehaviour {
     }
 
 
+    public static void enemyTurn() {
+        if (currentUnit is Enemy enemy) {
+            BattleAction action = enemy.getAction(party, enemies);
+            if (action.getAction() == Enums.BattleAction.Skill) {
+                chosenSkill = action.getSkill();
+                chosenTarget = action.getTarget();
+                if (chosenSkill is AttackSkill attackSkill) {
+                    attack(attackSkill);
+                }
+                else if (chosenSkill is HealSkill healSkill) {
+                    heal(healSkill);
+                }
+                currentUnit.chargeCost(chosenSkill.getType(), chosenSkill.getCost());
+            } else {
+                // To be implemented
+            }
+        }
+        nextTurn();
+    }
+
+
     /// <summary>
     /// Heals the chosen target by the amount specified in the heal skill.
     /// </summary>
@@ -259,5 +280,17 @@ public class BattleAction {
         action = Action;
         skill = Skill;
         target = Target;
+    }
+
+    public Enums.BattleAction getAction() {
+        return action;
+    }
+
+    public Skill getSkill() {
+        return skill;
+    }
+
+    public Unit getTarget() {
+        return target;
     }
 }
