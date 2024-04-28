@@ -14,6 +14,12 @@ public class BattleHandlerScript : MonoBehaviour {
     private static Skill chosenSkill;
     private static Unit chosenTarget;
 
+
+    /// <summary>
+    /// Starts a battle between the player and a group of enemies.
+    /// </summary>
+    /// <param name="Player"></param>
+    /// <param name="Enemies"></param>
     public static void startBattle(Player Player, Enemy[] Enemies) {
         player = Player;
         party = player.getParty();
@@ -34,12 +40,19 @@ public class BattleHandlerScript : MonoBehaviour {
     }
 
 
+    /// <summary>
+    /// Resets the values for the current turn. Closes UI panels.
+    /// </summary>
     public static void restartTurnValues() {
         chosenSkill = null;
         chosenTarget = null;
         BattleUIScript.closeAllPanels();
     }
 
+
+    /// <summary>
+    /// Moves to the next turn in the battle.
+    /// </summary>
     public static void nextTurn() {
         if (isFinished()) {
             endBattle();
@@ -60,23 +73,28 @@ public class BattleHandlerScript : MonoBehaviour {
         BattleUIScript.setUnit(currentUnit);
         BattleUIScript.updateStatusPanel(party, enemies, currentUnit);
 
-        // **** testing to be removed ****
-        if (currentUnit is Enemy) nextTurn();
+        
+        // if (currentUnit is Enemy enemy)  
     }
 
+
+    /// <summary>
+    /// Checks if the battle has ended.
+    /// </summary>
+    /// <returns></returns>
     private static bool isFinished() {
         bool partyAlive = false;
         bool enemiesAlive = false;
 
         foreach (PartyMember member in party) {
-            if (member.getHp() > 0) {
+            if (member.isAlive()) {
                 partyAlive = true;
                 break;
             }
         }
 
         foreach (Enemy enemy in enemies) {
-            if (enemy.getHp() > 0) {
+            if (enemy.isAlive()) {
                 enemiesAlive = true;
                 break;
             }
@@ -85,10 +103,20 @@ public class BattleHandlerScript : MonoBehaviour {
         return !partyAlive || !enemiesAlive;
     }
 
+
+    /// <summary>
+    /// Ends the battle. Displays the results to the user.
+    /// </summary>
     public static void endBattle() {
         // Display to User.
     }
 
+
+    /// <summary>
+    /// Selects a skill for the current unit to use.
+    /// Used by Unity Buttons.
+    /// </summary>
+    /// <param name="i"></param>
     public static void selectSkill(int i) {
         if (currentUnit == null) {
             Debug.LogError("No unit selected");
@@ -122,6 +150,12 @@ public class BattleHandlerScript : MonoBehaviour {
         }
     }
 
+
+    /// <summary>
+    /// Selects a target for the current unit to attack.
+    /// Used by Unity Buttons.
+    /// </summary>
+    /// <param name="i"></param>
     public static void selectTarget(int i) {
         if (chosenSkill == null) {
             Debug.LogError("No skill selected");
@@ -141,6 +175,11 @@ public class BattleHandlerScript : MonoBehaviour {
         nextTurn();
     }
 
+
+    /// <summary>
+    /// Heals the chosen target by the amount specified in the heal skill.
+    /// </summary>
+    /// <param name="healSkill"></param>
     private static void heal(HealSkill healSkill) {
         int amount = healSkill.isPercentBased() ? 
             (int) Math.Floor((double) chosenTarget.getMaxHp() * healSkill.getAmount()) : healSkill.getAmount();
@@ -148,33 +187,77 @@ public class BattleHandlerScript : MonoBehaviour {
         BattleUIScript.setInfoText("Healed " + chosenTarget.getName() + " for " + amount + " HP");
     }
 
+
+    /// <summary>
+    /// Attacks the chosen target with the chosen attack skill.
+    /// </summary>
+    /// <param name="attackSkill"></param>
     private static void attack(AttackSkill attackSkill) {
         // Evasion Check
-        int unitHitRate = (attackSkill.getType() == Enums.SkillType.Physical) ? currentUnit.getAgility() : currentUnit.getSpirit();
-
-        int targetLuck = chosenTarget.getLuck();
-        int targetDodgeChance = UnityEngine.Random.Range(-targetLuck, targetLuck);
-        int targetDodgeRate = chosenTarget.getAgility() + targetDodgeChance;
-
-        if (UnityEngine.Random.Range(0, 100) < targetDodgeRate - unitHitRate) {
+        if (evasionCheck(attackSkill, currentUnit, chosenTarget)) {
             BattleUIScript.setInfoText(chosenTarget.getName() + " dodged the attack!");
             return;
         }
 
         // Damage Calculation
+        int damage = damageCalc(attackSkill, currentUnit, chosenTarget);
+
+        chosenTarget.damage(damage);
+        BattleUIScript.setInfoText("Dealt " + damage + " damage to " + chosenTarget.getName());
+    }
+
+
+    /// <summary>
+    /// Calculates the damage dealt by the attacker to the target unit.
+    /// </summary>
+    /// <param name="attackSkill"></param>
+    /// <param name="attacker"></param>
+    /// <param name="targetUnit"></param>
+    /// <returns></returns>
+    public static int damageCalc(AttackSkill attackSkill, Unit attacker, Unit targetUnit) {
         int baseDamage = attackSkill.getBaseDamage();
-        int luckStat = currentUnit.getLuck();
+        int luckStat = attacker.getLuck();
 
         int minRoll = baseDamage - (baseDamage / 3);
         int maxRoll = baseDamage + (baseDamage / 5);
         int luckRoll = (int) UnityEngine.Random.Range(0, (baseDamage * (luckStat / 198f)) + 1);
         int damageRoll = UnityEngine.Random.Range(minRoll, maxRoll) + luckRoll;
 
-        int scaleStat = (attackSkill.getType() == Enums.SkillType.Physical) ? currentUnit.getStrength() : currentUnit.getIntelligence();
-        int targetDefense = chosenTarget.getDefense();
+        int scaleStat = (attackSkill.getType() == Enums.SkillType.Physical) ? attacker.getStrength() : attacker.getIntelligence();
+        int targetDefense = targetUnit.getDefense();
         int damage = (int) Math.Floor(damageRoll + ((scaleStat - targetDefense) / 100f * damageRoll));
 
-        chosenTarget.damage(damage);
-        BattleUIScript.setInfoText("Dealt " + damage + " damage to " + chosenTarget.getName());
+        return damage;
+    }
+
+
+    /// <summary>
+    /// Checks if the target unit evades the attack.
+    /// </summary>
+    /// <param name="skill"></param>
+    /// <param name="attacker"></param>
+    /// <param name="targetUnit"></param>
+    /// <returns></returns>
+    public static bool evasionCheck(Skill skill, Unit attacker, Unit targetUnit) {
+        int unitHitRate = (skill.getType() == Enums.SkillType.Physical) ? attacker.getAgility() : attacker.getSpirit();
+
+        int targetLuck = targetUnit.getLuck();
+        int targetDodgeChance = UnityEngine.Random.Range(-targetLuck, targetLuck);
+        int targetDodgeRate = targetUnit.getAgility() + targetDodgeChance;
+
+        return UnityEngine.Random.Range(0, 100) < targetDodgeRate - unitHitRate;
+    }
+}
+
+
+public class BattleAction {
+    private Enums.BattleAction action;
+    private Skill skill;
+    private Unit target;
+
+    public BattleAction(Enums.BattleAction Action, Skill Skill, Unit Target) {
+        action = Action;
+        skill = Skill;
+        target = Target;
     }
 }
