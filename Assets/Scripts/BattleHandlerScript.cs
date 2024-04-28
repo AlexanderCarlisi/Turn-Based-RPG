@@ -1,18 +1,37 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class BattleHandlerScript : MonoBehaviour {
 
     private static BattleHandlerScript instance;
     private Battle battle;
+    private string infoTextMessage;
 
 
     // Start is called before the first frame update
-    private void Start() {
+    void Start() {
         instance = this;
+        infoTextMessage = "Battle Started";
+    }
+
+
+    // Update is called once per frame
+    void FixedUpdate() {
+        if (battle != null) {
+            BattleUIScript.updateStatusPanel(battle.party, battle.enemies, battle.currentUnit);
+            BattleUIScript.setInfoText(infoTextMessage);
+        }
+    }
+
+
+    /// <summary>
+    /// Sets the info text to be displayed to the user.
+    /// </summary>
+    /// <param name="message"></param>
+    public void setInfoText(string message) {
+        infoTextMessage = message;
     }
 
 
@@ -47,12 +66,12 @@ public class BattleHandlerScript : MonoBehaviour {
 
 
     private class Battle {
-        private Player player;
-        private PartyMember[] party;
-        private Enemy[] enemies;
+        public Player player;
+        public PartyMember[] party;
+        public Enemy[] enemies;
 
         private int turnIndex;
-        private Unit currentUnit;
+        public Unit currentUnit;
         private List<Unit> turnOrder;
 
         private Skill chosenSkill;
@@ -104,18 +123,16 @@ public class BattleHandlerScript : MonoBehaviour {
             }
             restartTurnValues();
 
-            turnOrder.ForEach(unit => {
-                if (!unit.isAlive()) {
-                    turnOrder.Remove(unit);
-                }
-            });
+            for (int i = 0; i < turnOrder.Count; i++) 
+                if (!turnOrder[i].isAlive()) turnOrder.RemoveAt(i);
+            
             turnOrder.Sort((a, b) => a.getAgility().CompareTo(b.getAgility()));
 
             turnIndex++;
             if (turnIndex >= turnOrder.Count) turnIndex = 0;
             currentUnit = turnOrder[turnIndex];
             BattleUIScript.setUnit(currentUnit);
-            BattleUIScript.updateStatusPanel(party, enemies, currentUnit);
+            // BattleUIScript.updateStatusPanel(party, enemies, currentUnit);
         
             if (currentUnit is Enemy enemy) enemyTurn();
         }
@@ -207,7 +224,7 @@ public class BattleHandlerScript : MonoBehaviour {
 
             if (chosenSkill is AttackSkill attackSkill) {
                 chosenTarget = enemies[i];
-                attack(attackSkill);
+                useAttackSkill(attackSkill);
             }
             else if (chosenSkill is HealSkill healSkill) {
                 chosenTarget = party[i];
@@ -219,18 +236,18 @@ public class BattleHandlerScript : MonoBehaviour {
         }
 
 
-
         /// <summary>
         /// Handles the enemy's turn in the battle.
         /// </summary>
         public void enemyTurn() {
             if (currentUnit is Enemy enemy) {
                 BattleAction action = enemy.getAction(party, enemies);
+
                 if (action.getAction() == Enums.BattleAction.Skill) {
                     chosenSkill = action.getSkill();
                     chosenTarget = action.getTarget();
                     if (chosenSkill is AttackSkill attackSkill) {
-                        attack(attackSkill);
+                        useAttackSkill(attackSkill);
                     }
                     else if (chosenSkill is HealSkill healSkill) {
                         heal(healSkill);
@@ -240,9 +257,7 @@ public class BattleHandlerScript : MonoBehaviour {
                     // To be implemented
                 }
             }
-            Debug.Log("Enemy Turn Ended");
             waitSeconds(3f);
-            Debug.Log("Next Turn");
             nextTurn();
         }
 
@@ -251,7 +266,7 @@ public class BattleHandlerScript : MonoBehaviour {
         /// Heals the chosen target by the amount specified in the heal skill.
         /// </summary>
         /// <param name="healSkill"></param>
-        private  void heal(HealSkill healSkill) {
+        private void heal(HealSkill healSkill) {
             int amount = healSkill.isPercentBased() ? 
                 (int) Math.Floor((double) chosenTarget.getMaxHp() * healSkill.getAmount()) : healSkill.getAmount();
             chosenTarget.heal(amount);
@@ -263,18 +278,18 @@ public class BattleHandlerScript : MonoBehaviour {
         /// Attacks the chosen target with the chosen attack skill.
         /// </summary>
         /// <param name="attackSkill"></param>
-        private void attack(AttackSkill attackSkill) {
+        private void useAttackSkill(AttackSkill attackSkill) {
             // Evasion Check
             if (evasionCheck(attackSkill, currentUnit, chosenTarget)) {
-                BattleUIScript.setInfoText(chosenTarget.getName() + " dodged the attack!");
+                instance.setInfoText(chosenTarget.getName() + " dodged the attack!");
                 return;
             }
 
             // Damage Calculation
             int damage = damageCalc(attackSkill, currentUnit, chosenTarget);
-
+            Debug.Log("Dealt " + damage + " damage to " + chosenTarget.getName());
             chosenTarget.damage(damage);
-            BattleUIScript.setInfoText("Dealt " + damage + " damage to " + chosenTarget.getName());
+            instance.setInfoText("Dealt " + damage + " damage to " + chosenTarget.getName());
         }
 
 
