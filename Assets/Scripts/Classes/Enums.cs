@@ -98,4 +98,15 @@ public static class Enums {
             Mastered
         }
     }
+
+
+    /// <summary>
+    /// The type of action the player and enemy can take in battle.
+    /// </summary>
+    public enum BattleAction {
+        Weapon,
+        Skill,
+        Item,
+        Guard
+    }
 }
