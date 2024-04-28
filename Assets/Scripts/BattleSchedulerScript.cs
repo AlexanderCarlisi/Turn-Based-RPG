@@ -14,6 +14,7 @@ public class BattleSchedulerScript : MonoBehaviour {
             Skill.getAttackSkill(Enums.SkillNames.Attack.Fireball),
             Skill.getAttackSkill(Enums.SkillNames.Attack.IceBlast),
         }, Enums.AlgorithemType.Sniper),
+        
         new ("Scary Cube", 30, 40, 5, new int[]{7, 5, 5, 7, 1, 1, 5}, new Skill[]{
             Skill.getAttackSkill(Enums.SkillNames.Attack.Slash),
             Skill.getAttackSkill(Enums.SkillNames.Attack.PiercingHalos),

@@ -340,23 +340,26 @@ public class Enemy : Unit {
                     }
                 }
 
-                // If the target is at 10% or less hp, check each attackSkill for one that will kill
+                // Analyze each Skill in Unit
                 AttackSkill strongestSkill = null;
-                if (target.getHp() <= target.getMaxHp() * 0.1) foreach (Skill sk in getSkills()) {
-                    // Look for attack skill within cost
+                foreach (Skill sk in getSkills()) {
+                    // Look for attack skills within cost
                     if (sk is AttackSkill atkSkill && checkCost(sk.getType(), sk.getCost())) {
                         // Keep track of Strongest Skill.
                         if (strongestSkill == null || atkSkill.getBaseDamage() > strongestSkill.getBaseDamage()) {
                             strongestSkill = atkSkill;
                         }
 
-                        // Simulate damage to the target and check if it will die, DOESN'T necessarily mean they WILL die.
-                        int damage = BattleSim.damageCalc(atkSkill, this, target);
-                        // If multiple skills will kill, use the one with the lowest cost.
-                        if (target.getHp() - damage <= 0 && atkSkill.getCost() < skill.getCost()) {
-                            skill = atkSkill;
-                            actionType = Enums.BattleAction.Skill;
-                            break;
+                        // Look for the best skill to kill the target
+                        if (target.getHp() <= target.getMaxHp() * 1) { // change 1 if you want to change the threshold
+                            // Simulate damage to the target and check if it will die, DOESN'T necessarily mean they WILL die.
+                            int damage = BattleSim.damageCalc(atkSkill, this, target);
+                            // If multiple skills will kill, use the one with the lowest cost.
+                            if (target.getHp() - damage <= 0 && atkSkill.getCost() < skill.getCost()) {
+                                skill = atkSkill;
+                                actionType = Enums.BattleAction.Skill;
+                                break;
+                            }
                         }
                     }
                 }
