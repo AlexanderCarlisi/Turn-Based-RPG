@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using Unity.VisualScripting;
 
 public class Unit {
 
@@ -266,15 +264,13 @@ public class Enemy : Unit {
                 bool useSkill = UnityEngine.Random.Range(0, 1) == 1;
                 if (useSkill) {
                     skill = getSkills()[UnityEngine.Random.Range(0, getSkills().Length)];
-                    actionType = Enums.BattleAction.Skill;
 
                     // Check if the cost is affordable, if not use recursion and try again
-                    if (!checkCost(skill.getType(), skill.getCost())) {
-                        return getAction(party, enemies);
+                    if (checkCost(skill.getType(), skill.getCost())) {
+                        actionType = Enums.BattleAction.Skill;
+                    } else {
+                        skill = null;
                     }
-
-                } else { // Use the Weapon
-                    actionType = Enums.BattleAction.Weapon;
                 }
                 break;
             }
@@ -292,7 +288,7 @@ public class Enemy : Unit {
                                 skill = sk;
                                 actionType = Enums.BattleAction.Skill;
                                 target = enemy;
-                                return new BattleAction(actionType, skill, target);
+                                break;
                             }
                         }
                         break; // No target to heal
@@ -326,8 +322,6 @@ public class Enemy : Unit {
                     }
                 }
 
-                // If there is no Attack skills wihin cost
-                if (skill == null) actionType = Enums.BattleAction.Weapon;
                 break;
             }
                 
@@ -355,7 +349,7 @@ public class Enemy : Unit {
                             // Simulate damage to the target and check if it will die, DOESN'T necessarily mean they WILL die.
                             int damage = BattleSim.damageCalc(atkSkill, this, target);
                             // If multiple skills will kill, use the one with the lowest cost.
-                            if (target.getHp() - damage <= 0 && atkSkill.getCost() < skill.getCost()) {
+                            if (target.getHp() - damage <= 0 && (skill == null || atkSkill.getCost() < skill.getCost())) {
                                 skill = atkSkill;
                                 actionType = Enums.BattleAction.Skill;
                                 break;
@@ -368,8 +362,6 @@ public class Enemy : Unit {
                 if (skill == null && strongestSkill != null) {
                     skill = strongestSkill;
                     actionType = Enums.BattleAction.Skill;
-                } else { // If there are no AttackSkills within Cost use Weapon
-                    actionType = Enums.BattleAction.Weapon;
                 }
 
                 break;
